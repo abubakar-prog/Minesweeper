@@ -3,9 +3,11 @@
 #include "constants.h"
 #include <cstdlib>
 
+
 void initializeGame() {
     resetGameState();
     int minesPlaced = 0;
+    bool explosion = false;
     while (minesPlaced < currentMineCount) {
         int x = rand() % currentGridSize;
         int y = rand() % currentGridSize;
@@ -41,6 +43,7 @@ void revealCell(int x, int y) {
     cellsRevealed++;
     if (grid[x][y] == -1) {
         gameOver = true;
+        explosion = true;
         revealAllMines();
         return;
     }
@@ -73,7 +76,7 @@ void checkWin() {
             if (revealed[i][j]) revealedCount++;
         }
     }
-    if (revealedCount == currentGridSize * currentGridSize - currentMineCount) {
+    if ((revealedCount == currentGridSize * currentGridSize - currentMineCount)&&(explosion==false)) {
         gameWon = true;
         calculateScore();
     }
