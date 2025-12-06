@@ -5,7 +5,7 @@
 
 bool loadFont(sf::Font& font) {
     if (font.openFromFile("arial.ttf")) return true;
-    if (font.openFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")) return true;
+    if (font.openFromFile("Minesweeper\ARIAL.TTF")) return true;
     if (font.openFromFile("C:\\Windows\\Fonts\\arial.ttf")) return true;
     if (font.openFromFile("/System/Library/Fonts/Supplemental/Arial.ttf")) return true;
     return false;
@@ -68,7 +68,7 @@ void drawGame(sf::RenderWindow& window, sf::Font& font, const sf::Texture& mineT
     mineCounter.setString(mineCountBuffer);
     mineCounter.setCharacterSize(20);
     mineCounter.setFillColor(sf::Color(255, 255, 0));
-    mineCounter.setPosition(sf::Vector2f(500.0f, 25.0f));
+    mineCounter.setPosition(sf::Vector2f(480.0f, 17.0f));
     window.draw(mineCounter);
     char cellsBuffer[50];
     idx = 0;
@@ -92,12 +92,12 @@ void drawGame(sf::RenderWindow& window, sf::Font& font, const sf::Texture& mineT
     sf::Text scoreText(font);
     scoreText.setString(cellsBuffer);
     scoreText.setCharacterSize(20);
-    scoreText.setFillColor(sf::Color(0, 255, 255));
-    scoreText.setPosition(sf::Vector2f(500.0f, 50.0f));
+    scoreText.setFillColor(sf::Color(255, 255, 0));
+    scoreText.setPosition(sf::Vector2f(480.0f, 42.0f));
     window.draw(scoreText);
     sf::RectangleShape pauseButton;
-    pauseButton.setSize(sf::Vector2f(60.0f, 30.0f));
-    pauseButton.setPosition(sf::Vector2f(650.0f, 15.0f));
+    pauseButton.setSize(sf::Vector2f(73.0f, 30.0f));
+    pauseButton.setPosition(sf::Vector2f(640.0f, 15.0f));
     pauseButton.setFillColor(sf::Color(100, 100, 150));
     pauseButton.setOutlineThickness(2.0f);
     pauseButton.setOutlineColor(sf::Color(200, 200, 200));
@@ -106,7 +106,7 @@ void drawGame(sf::RenderWindow& window, sf::Font& font, const sf::Texture& mineT
     pauseText.setString("Pause");
     pauseText.setCharacterSize(20);
     pauseText.setFillColor(sf::Color(255, 255, 255));
-    pauseText.setPosition(sf::Vector2f(655.0f, 18.0f));
+    pauseText.setPosition(sf::Vector2f(645.0f, 18.0f));
     window.draw(pauseText);
     sf::RectangleShape menuButton;
     menuButton.setSize(sf::Vector2f(60.0f, 30.0f));
@@ -132,14 +132,14 @@ void drawGame(sf::RenderWindow& window, sf::Font& font, const sf::Texture& mineT
             cell.setPosition(sf::Vector2f(cellX, cellY));
             if (revealed[i][j]) {
                 if (grid[i][j] == -1) {
-                    cell.setFillColor(sf::Color(255, 0, 0));
+                    cell.setFillColor(sf::Color(255, 255,255));
                 }
                 else {
-                    cell.setFillColor(sf::Color(220, 220, 220));
+                    cell.setFillColor(sf::Color(170, 170, 170));
                 }
             }
             else {
-                cell.setFillColor(sf::Color(100, 100, 100));
+                cell.setFillColor(sf::Color(255, 255, 255));
             }
             cell.setOutlineThickness(1.0f);
             cell.setOutlineColor(sf::Color(50, 50, 50));
@@ -148,7 +148,7 @@ void drawGame(sf::RenderWindow& window, sf::Font& font, const sf::Texture& mineT
                 sf::Sprite flagSprite(flagTexture);
                 float scale = 42.0f / flagTexture.getSize().x;
                 flagSprite.setScale(sf::Vector2f(scale, scale));
-                flagSprite.setPosition(sf::Vector2f(cellX + 4.0f, cellY + 4.0f));
+                flagSprite.setPosition(sf::Vector2f(cellX + 3.2f, cellY + 3.2f));
                 window.draw(flagSprite);
             }
             if (revealed[i][j]) {
@@ -156,7 +156,7 @@ void drawGame(sf::RenderWindow& window, sf::Font& font, const sf::Texture& mineT
                     sf::Sprite mineSprite(mineTexture);
                     float scale = 42.0f / mineTexture.getSize().x;
                     mineSprite.setScale(sf::Vector2f(scale, scale));
-                    mineSprite.setPosition(sf::Vector2f(cellX + 4.0f, cellY + 4.0f));
+                    mineSprite.setPosition(sf::Vector2f(cellX +3.2f , cellY+3.2f ));
                     window.draw(mineSprite);
                 }
                 else if (grid[i][j] > 0) {
