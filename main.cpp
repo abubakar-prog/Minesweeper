@@ -1,3 +1,4 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <cstdlib>
@@ -8,6 +9,8 @@
 #include "rendering.h"
 #include "menu.h"
 #include "file_handler.h"
+using namespace std;
+using namespace sf;
 
 int main() {
     srand((unsigned int)time(0));
@@ -30,15 +33,19 @@ int main() {
     initializeMenuState();
     loadHighScores();
     loadSettings();
+
     while (window.isOpen()) {
+
         while (const auto event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
+
             if (event->is<sf::Event::MouseButtonPressed>()) {
                 const auto mouseData = event->getIf<sf::Event::MouseButtonPressed>();
                 float x = (float)mouseData->position.x;
                 float y = (float)mouseData->position.y;
+				cout << "x: " << x << " y: " << y << endl;
                 int buttonType = (mouseData->button == sf::Mouse::Button::Left) ? 0 : 1;
                 if (currentScreen == SCREEN_MENU) {
                     if (buttonType == 0) handleMenuInput(x, y, font);
