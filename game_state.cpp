@@ -5,6 +5,7 @@ int currentScreen = SCREEN_MENU;
 int grid[MAX_GRID_SIZE][MAX_GRID_SIZE];
 bool revealed[MAX_GRID_SIZE][MAX_GRID_SIZE];
 bool flagged[MAX_GRID_SIZE][MAX_GRID_SIZE];
+bool explosion = false;
 bool gameOver = false;
 bool gameWon = false;
 int currentGridSize = EASY_SIZE;
@@ -27,6 +28,7 @@ void resetGameState() {
             flagged[i][j] = false;
         }
     }
+	explosion = false;
     gameOver = false;
     gameWon = false;
     cellsRevealed = 0;
