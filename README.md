@@ -1,2 +1,3 @@
 # Minesweeper
-C++ and SFML Library game minesweeper.
+Minesweeper game made using simple C++ and SFML Library.
+Semester 1 Project, Programming Fundamentals.
