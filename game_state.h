@@ -20,7 +20,7 @@ extern bool loseSoundPlayed;
 extern int highScores[MAX_HIGH_SCORES];
 extern char highScoreNames[MAX_HIGH_SCORES][MAX_NAME_LENGTH];
 extern int highScoreCount;
-
+extern bool explosion;
 void resetGameState();
 void setDifficulty(int difficulty);
 
