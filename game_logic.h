@@ -7,5 +7,5 @@ void toggleFlag(int x, int y);
 void checkWin();
 void calculateScore();
 void revealAllMines();
-
+void moveMineFromCell(int x, int y);
 #endif
