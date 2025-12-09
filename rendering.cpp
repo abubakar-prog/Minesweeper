@@ -2,178 +2,299 @@
 #include "game_state.h"
 #include "constants.h"
 #include <iostream>
+using namespace sf;
+using namespace std;
 
-bool loadFont(sf::Font& font) {
-    if (font.openFromFile("arial.ttf")) return true;
-    if (font.openFromFile("Minesweeper\ARIAL.TTF")) return true;
+
+bool loadFont(sf::Font& font) //load fonts
+{
+    if (font.openFromFile("assets/VIDEOPHREAK.ttf")) return true;
+    if (font.openFromFile("Minesweeper/ARIAL.TTF")) return true;
     if (font.openFromFile("C:\\Windows\\Fonts\\arial.ttf")) return true;
     if (font.openFromFile("/System/Library/Fonts/Supplemental/Arial.ttf")) return true;
     return false;
 }
 
-bool loadAssets(sf::Texture& mineTexture, sf::Texture& flagTexture, sf::SoundBuffer& winBuffer, sf::SoundBuffer& loseBuffer) {
+bool loadAssets(sf::Texture& mineTexture, sf::Texture& flagTexture, sf::SoundBuffer& winBuffer, sf::SoundBuffer& loseBuffer) //check assets
+{
     bool allLoaded = true;
     if (!mineTexture.loadFromFile(MINE_IMAGE_PATH)) {
-        std::cerr << "Failed to load mine image\n";
+        std::cerr << "Failed to load mine image"<<endl;
         allLoaded = false;
     }
     if (!flagTexture.loadFromFile(FLAG_IMAGE_PATH)) {
-        std::cerr << "Failed to load flag image\n";
+        std::cerr << "Failed to load flag image"<<endl;
         allLoaded = false;
     }
     if (!winBuffer.loadFromFile(WIN_SOUND_PATH)) {
-        std::cerr << "Failed to load win sound\n";
+        std::cerr << "Failed to load win sound"<<endl;
         allLoaded = false;
     }
     if (!loseBuffer.loadFromFile(LOSE_SOUND_PATH)) {
-        std::cerr << "Failed to load lose sound\n";
+        std::cerr << "Failed to load lose sound"<<endl;
         allLoaded = false;
     }
     return allLoaded;
 }
 
-void drawGame(sf::RenderWindow& window, sf::Font& font, const sf::Texture& mineTexture, const sf::Texture& flagTexture) {
+void drawGame(sf::RenderWindow& window, sf::Font& font, const sf::Texture& mineTexture, const sf::Texture& flagTexture) 
+{
+    //Title
     sf::RectangleShape titleBar;
-    titleBar.setSize(sf::Vector2f(800.0f, 80.0f));
-    titleBar.setPosition(sf::Vector2f(0.0f, 0.0f));
-    titleBar.setFillColor(sf::Color(30, 30, 30));
+    titleBar.setSize(sf::Vector2f (1100.0f, 80.0f));
+    titleBar.setPosition(sf::Vector2f (0.0f, 0.0f));
+    titleBar.setFillColor(sf::Color(30,30,30,255));
     window.draw(titleBar);
-    sf::Text title(font);
-    title.setString("MINESWEEPER");
-    title.setCharacterSize(32);
-    title.setFillColor(sf::Color(255, 255, 255));
+
+    //Title text
+    sf::Text title(font, "MINESWEEPER", 32);
+    title.setFillColor(sf::Color::White);
     title.setStyle(sf::Text::Bold);
     title.setPosition(sf::Vector2f(20.0f, 20.0f));
     window.draw(title);
-    char mineCountBuffer[50];
+
+    //Mine counter
     int remainingMines = currentMineCount - flagsPlaced;
-    int idx = 0;
-    mineCountBuffer[idx++] = 'M';
-    mineCountBuffer[idx++] = 'i';
-    mineCountBuffer[idx++] = 'n';
-    mineCountBuffer[idx++] = 'e';
-    mineCountBuffer[idx++] = 's';
-    mineCountBuffer[idx++] = ':';
-    mineCountBuffer[idx++] = ' ';
+    char mineText[50] = "Mines: ";
+    int idx = 7;
     if (remainingMines < 0) {
-        mineCountBuffer[idx++] = '-';
+        mineText[idx++] = '-';
         remainingMines = -remainingMines;
     }
     if (remainingMines >= 10) {
-        mineCountBuffer[idx++] = '0' + (remainingMines / 10);
+        mineText[idx++] = '0' + (remainingMines / 10);
     }
-    mineCountBuffer[idx++] = '0' + (remainingMines % 10);
-    mineCountBuffer[idx] = '\0';
-    sf::Text mineCounter(font);
-    mineCounter.setString(mineCountBuffer);
-    mineCounter.setCharacterSize(20);
-    mineCounter.setFillColor(sf::Color(255, 255, 0));
+    mineText[idx++] = '0' + (remainingMines % 10);
+    mineText[idx] = '\0';
+
+    sf::Text mineCounter(font, mineText, 20);
+    mineCounter.setFillColor(sf::Color::Yellow);
     mineCounter.setPosition(sf::Vector2f(480.0f, 17.0f));
     window.draw(mineCounter);
-    char cellsBuffer[50];
-    idx = 0;
-    cellsBuffer[idx++] = 'C';
-    cellsBuffer[idx++] = 'e';
-    cellsBuffer[idx++] = 'l';
-    cellsBuffer[idx++] = 'l';
-    cellsBuffer[idx++] = 's';
-    cellsBuffer[idx++] = ':';
-    cellsBuffer[idx++] = ' ';
+
+    //Cells revealed counter
+    char cellText[50] = "Cells: ";
+    int idx2 = 7;
     int tempCells = cellsRevealed;
     if (tempCells >= 100) {
-        cellsBuffer[idx++] = '0' + (tempCells / 100);
+        cellText[idx2++] = '0' + (tempCells / 100);
         tempCells %= 100;
     }
-    if (cellsRevealed >= 10 || cellsRevealed >= 100) {
-        cellsBuffer[idx++] = '0' + (tempCells / 10);
+    if (cellsRevealed >= 10) {
+        cellText[idx2++] = '0' + (tempCells / 10);
     }
-    cellsBuffer[idx++] = '0' + (tempCells % 10);
-    cellsBuffer[idx] = '\0';
-    sf::Text scoreText(font);
-    scoreText.setString(cellsBuffer);
-    scoreText.setCharacterSize(20);
-    scoreText.setFillColor(sf::Color(255, 255, 0));
-    scoreText.setPosition(sf::Vector2f(480.0f, 42.0f));
+    cellText[idx2++] = '0' + (tempCells % 10);
+    cellText[idx2] = '\0';
+
+    sf::Text scoreText(font, cellText, 20);
+    scoreText.setFillColor(sf::Color::Yellow);
+    sf::Vector2f scorePos;
+    scorePos.x = 480.0f;
+    scorePos.y = 42.0f;
+    scoreText.setPosition(scorePos);
     window.draw(scoreText);
+
+    //Timer
+    char timeText[50] = "Time: ";
+    int idx3 = 6;
+    int tempTime = timerSeconds;
+    if (tempTime >= 100) {
+        timeText[idx3++] = '0' + (tempTime / 100);
+        tempTime %= 100;
+    }
+    if (timerSeconds >= 10) {
+        timeText[idx3++] = '0' + (tempTime / 10);
+    }
+    timeText[idx3++] = '0' + (tempTime % 10);
+    timeText[idx3++] = 's';
+    timeText[idx3] = '\0';
+
+    //timer text drawn
+    sf::Text timerText(font, timeText, 20);
+    timerText.setFillColor(sf::Color::Yellow);
+    timerText.setPosition(sf::Vector2f(680.0f, 17.0f));
+    window.draw(timerText);
+
+
+    //pause button
     sf::RectangleShape pauseButton;
-    pauseButton.setSize(sf::Vector2f(73.0f, 30.0f));
-    pauseButton.setPosition(sf::Vector2f(640.0f, 15.0f));
-    pauseButton.setFillColor(sf::Color(100, 100, 150));
-    pauseButton.setOutlineThickness(2.0f);
-    pauseButton.setOutlineColor(sf::Color(200, 200, 200));
+    sf::Vector2f pauseSize;
+    pauseSize.x = 73.0f;
+    pauseSize.y = 30.0f;
+    pauseButton.setSize(pauseSize);
+    sf::Vector2f pausePos;
+    pausePos.x = 840.0f;
+    pausePos.y = 15.0f;
+    pauseButton.setPosition(pausePos);
+    sf::Color pauseColor;
+    pauseColor.r = 100;
+    pauseColor.g = 100;
+    pauseColor.b = 150;
+    pauseColor.a = 255;
+    pauseButton.setFillColor(pauseColor);
+    //pauseButton.setOutlineThickness(2.0f);
+    sf::Color lightGray;
+    lightGray.r = 200;
+    lightGray.g = 200;
+    lightGray.b = 200;
+    lightGray.a = 255;
+    //pauseButton.setOutlineColor(lightGray);
     window.draw(pauseButton);
-    sf::Text pauseText(font);
-    pauseText.setString("Pause");
-    pauseText.setCharacterSize(20);
-    pauseText.setFillColor(sf::Color(255, 255, 255));
-    pauseText.setPosition(sf::Vector2f(645.0f, 18.0f));
+
+
+    //pause text
+    sf::Text pauseText(font,"Pause",20);
+    pauseText.setFillColor(sf::Color::White);
+    sf::Vector2f pauseTextPos;
+    pauseTextPos.x = 845.0f;
+    pauseTextPos.y = 18.0f;
+    pauseText.setPosition(pauseTextPos);
     window.draw(pauseText);
+
+    //menu button
     sf::RectangleShape menuButton;
-    menuButton.setSize(sf::Vector2f(60.0f, 30.0f));
-    menuButton.setPosition(sf::Vector2f(720.0f, 15.0f));
-    menuButton.setFillColor(sf::Color(150, 100, 100));
-    menuButton.setOutlineThickness(2.0f);
-    menuButton.setOutlineColor(sf::Color(200, 200, 200));
+    sf::Vector2f menuSize;
+    menuSize.x = 75.0f;
+    menuSize.y = 30.0f;
+    menuButton.setSize(menuSize);
+    sf::Vector2f menuPos;
+    menuPos.x = 920.0f;
+    menuPos.y = 15.0f;
+    menuButton.setPosition(menuPos);
+    sf::Color menuColor;
+    menuColor.r = 150;
+    menuColor.g = 100;
+    menuColor.b = 100;
+    menuColor.a = 255;
+    menuButton.setFillColor(menuColor);
+    //menuButton.setOutlineThickness(2.0f);
+    //menuButton.setOutlineColor(lightGray);
     window.draw(menuButton);
-    sf::Text menuText(font);
-    menuText.setString("Menu");
-    menuText.setCharacterSize(20);
-    menuText.setFillColor(sf::Color(255, 255, 255));
-    menuText.setPosition(sf::Vector2f(727.0f, 18.0f));
+
+    //menu text
+    sf::Text menuText(font,"Menu",20);
+    menuText.setFillColor(sf::Color::White);
+    sf::Vector2f menuTextPos;
+    menuTextPos.x = 927.0f;
+    menuTextPos.y = 18.0f;
+    menuText.setPosition(menuTextPos);
     window.draw(menuText);
+
+    //grid
     int gridPixelSize = currentGridSize * 50;
-    int offsetX = (800 - gridPixelSize) / 2;
+    int offsetX = (1100 - gridPixelSize) / 2;
+
+    //drawing cell
     for (int i = 0; i < currentGridSize; i++) {
         for (int j = 0; j < currentGridSize; j++) {
             float cellX = offsetX + j * 50 + 1.0f;
             float cellY = 100 + i * 50 + 1.0f;
+
+            //cell background
             sf::RectangleShape cell;
-            cell.setSize(sf::Vector2f(48.0f, 48.0f));
-            cell.setPosition(sf::Vector2f(cellX, cellY));
+            sf::Vector2f cellSize;
+            cellSize.x = 48.0f;
+            cellSize.y = 48.0f;
+            cell.setSize(cellSize);
+            sf::Vector2f cellPos;
+            cellPos.x = cellX;
+            cellPos.y = cellY;
+            cell.setPosition(cellPos);
+
+            //change color
             if (revealed[i][j]) {
                 if (grid[i][j] == -1) {
-                    cell.setFillColor(sf::Color(255, 255,255));
+                    cell.setFillColor(sf::Color::White);
                 }
                 else {
-                    cell.setFillColor(sf::Color(170, 170, 170));
+                    sf::Color gray;
+                    gray.r = 170;
+                    gray.g = 170;
+                    gray.b = 170;
+                    gray.a = 255;
+                    cell.setFillColor(gray);
                 }
             }
             else {
-                cell.setFillColor(sf::Color(255, 255, 255));
+                cell.setFillColor(sf::Color::White);
             }
-            cell.setOutlineThickness(1.0f);
-            cell.setOutlineColor(sf::Color(50, 50, 50));
+
+            //cell.setOutlineThickness(1.0f);
+            //sf::Color darkOutline;
+            //darkOutline.r = 50;
+            //darkOutline.g = 50;
+            //darkOutline.b = 50;
+            //darkOutline.a = 255;
+            //cell.setOutlineColor(darkOutline);
             window.draw(cell);
+
+            //Draw flag
             if (flagged[i][j] && !revealed[i][j]) {
                 sf::Sprite flagSprite(flagTexture);
                 float scale = 42.0f / flagTexture.getSize().x;
-                flagSprite.setScale(sf::Vector2f(scale, scale));
-                flagSprite.setPosition(sf::Vector2f(cellX + 3.2f, cellY + 3.2f));
+                sf::Vector2f flagScale;
+                flagScale.x = scale;
+                flagScale.y = scale;
+                flagSprite.setScale(flagScale);
+                sf::Vector2f flagPos;
+                flagPos.x = cellX + 3.2f;
+                flagPos.y = cellY + 3.2f;
+                flagSprite.setPosition(flagPos);
                 window.draw(flagSprite);
             }
+
+            //Draw revealed content
             if (revealed[i][j]) {
-                if (grid[i][j] == -1) {
-                    sf::Sprite mineSprite(mineTexture);
+                if (grid[i][j] == -1) //Draw if mine
+                {
+                    Sprite mineSprite(mineTexture);
                     float scale = 42.0f / mineTexture.getSize().x;
-                    mineSprite.setScale(sf::Vector2f(scale, scale));
-                    mineSprite.setPosition(sf::Vector2f(cellX +3.2f , cellY+3.2f ));
+                    Vector2f mineScale;
+                    mineScale.x = scale;
+                    mineScale.y = scale;
+                    mineSprite.setScale(mineScale);
+                    Vector2f minePos;
+                    minePos.x = cellX + 3.2f;
+                    minePos.y = cellY + 3.2f;
+                    mineSprite.setPosition(minePos);
                     window.draw(mineSprite);
                 }
-                else if (grid[i][j] > 0) {
-                    sf::Text text(font);
-                    char numBuffer[2];
-                    numBuffer[0] = '0' + grid[i][j];
-                    numBuffer[1] = '\0';
-                    text.setString(numBuffer);
-                    text.setCharacterSize(26);
+                else if (grid[i][j] > 0) 
+                {
+                    //Draw number
+                    char numText[2];
+                    numText[0] = '0' + grid[i][j];
+                    numText[1] = '\0';
+
+                    Text text(font, numText, 26);
                     text.setStyle(sf::Text::Bold);
-                    text.setPosition(sf::Vector2f(cellX + 14.0f, cellY + 10.0f));
-                    if (grid[i][j] == 1) text.setFillColor(sf::Color(0, 0, 255));
-                    else if (grid[i][j] == 2) text.setFillColor(sf::Color(0, 255, 0));
-                    else if (grid[i][j] == 3) text.setFillColor(sf::Color(255, 0, 0));
-                    else if (grid[i][j] == 4) text.setFillColor(sf::Color(128, 0, 128));
-                    else if (grid[i][j] == 5) text.setFillColor(sf::Color(128, 0, 0));
-                    else text.setFillColor(sf::Color(0, 0, 0));
+                    sf::Vector2f textPos;
+                    textPos.x = cellX + 14.0f;
+                    textPos.y = cellY + 10.0f;
+                    text.setPosition(textPos);
+
+                    //color of number to draw
+                    Color numColor;
+                    numColor.a = 255;
+                    if (grid[i][j] == 1) {
+                        numColor.r = 0; numColor.g = 0; numColor.b = 255;
+                    }
+                    else if (grid[i][j] == 2) {
+                        numColor.r = 0; numColor.g = 255; numColor.b = 0;
+                    }
+                    else if (grid[i][j] == 3) {
+                        numColor.r = 255; numColor.g = 0; numColor.b = 0;
+                    }
+                    else if (grid[i][j] == 4) {
+                        numColor.r = 128; numColor.g = 0; numColor.b = 128;
+                    }
+                    else if (grid[i][j] == 5) {
+                        numColor.r = 128; numColor.g = 0; numColor.b = 0;
+                    }
+                    else {
+                        numColor.r = 0; numColor.g = 0; numColor.b = 0;
+                    }
+                    text.setFillColor(numColor);
                     window.draw(text);
                 }
             }
